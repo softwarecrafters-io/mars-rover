@@ -1,4 +1,4 @@
-import { Position } from './marsRover';
+import { Position } from './roverController';
 
 enum CardinalPoint {
 	North = 'N',

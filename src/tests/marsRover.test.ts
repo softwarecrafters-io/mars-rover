@@ -1,11 +1,11 @@
-import { MarsRover } from '../core/marsRover';
+import { RoverController } from '../core/roverController';
 
 describe('The Mars Rover', () => {
 	it.each([
 		['0 0 N', '0 0 N'],
 		['1 1 W', '1 1 W'],
 	])('stays in initial location (%p) for a given empty command', (initialLocation, expectedLocation) => {
-		const rover = new MarsRover(initialLocation);
+		const rover = new RoverController(initialLocation);
 
 		const result = rover.execute('');
 
@@ -18,7 +18,7 @@ describe('The Mars Rover', () => {
 		['0 1 S', '0 0 S'],
 		['1 0 W', '0 0 W'],
 	])('moves forward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new MarsRover(initialLocation);
+		const rover = new RoverController(initialLocation);
 
 		const result = rover.execute('F');
 
@@ -31,7 +31,7 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 1 S'],
 		['0 0 W', '1 0 W'],
 	])('moves backward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new MarsRover(initialLocation);
+		const rover = new RoverController(initialLocation);
 
 		const result = rover.execute('B');
 
@@ -44,7 +44,7 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 0 W'],
 		['0 0 W', '0 0 N'],
 	])('rotates 90 degrees to the right for a given right rotation command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new MarsRover(initialLocation);
+		const rover = new RoverController(initialLocation);
 
 		const result = rover.execute('R');
 
@@ -57,7 +57,7 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 0 E'],
 		['0 0 E', '0 0 N'],
 	])('rotates 90 degrees to the left for a given left rotation command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new MarsRover(initialLocation);
+		const rover = new RoverController(initialLocation);
 
 		const result = rover.execute('L');
 
@@ -72,7 +72,7 @@ describe('The Mars Rover', () => {
 	])(
 		'moves forward multiple step in the axis for a given forward command (%p)',
 		(initialLocation, expectedLocation) => {
-			const rover = new MarsRover(initialLocation);
+			const rover = new RoverController(initialLocation);
 
 			const result = rover.execute('FFF');
 
@@ -88,7 +88,7 @@ describe('The Mars Rover', () => {
 	])(
 		'moves backward multiple step in the axis for a given forward command (%p)',
 		(initialLocation, expectedLocation) => {
-			const rover = new MarsRover(initialLocation);
+			const rover = new RoverController(initialLocation);
 
 			const result = rover.execute('BBB');
 
@@ -99,25 +99,10 @@ describe('The Mars Rover', () => {
 	it('moves and rotates multiple times for a given command sequence', () => {
 		const initialLocation = '0 0 N';
 		const expectedLocation = '2 2 S';
-		const rover = new MarsRover(initialLocation);
+		const rover = new RoverController(initialLocation);
 
 		const result = rover.execute('FFRFFFBRRL');
 
 		expect(result).toBe(expectedLocation);
 	});
 });
-
-/*
-describe('The Mars Rover', () => {
-	it('stays in place for a given empty command', () => {
-		const marsRover = new RoverController(new RoverNavigator(0, 0, CardinalPoint.create('North')));
-		const emptyCommands = '';
-		expect(marsRover.execute(emptyCommands)).toBe('0 0 N');
-	});
-
-	it(`moves forward one step in the y-axis for a given forward command when it is facing north`, () => {
-		const marsRover = new RoverController(new RoverNavigator(0, 0, CardinalPoint.create('North')));
-		const commands = 'F';
-		expect(marsRover.execute(commands)).toBe('0 1 N');
-	});
-*/
