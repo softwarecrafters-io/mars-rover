@@ -31,6 +31,28 @@ class NavigatorFactory {
 	}
 }
 
+interface Command {
+	//execute(): Rover;
+}
+
+type CommandUnion = MoveForwardCommand | RotateRightCommand | RotateLeftCommand | MoveBackwardCommand;
+
+class MoveForwardCommand {
+	action: 'moveForward' = 'moveForward';
+}
+
+class RotateRightCommand {
+	action: 'rotateRight' = 'rotateRight';
+}
+
+class RotateLeftCommand {
+	action: 'rotateLeft' = 'rotateLeft';
+}
+
+class MoveBackwardCommand {
+	action: 'moveBackward' = 'moveBackward';
+}
+
 class Rover {
 	private constructor(readonly position: Position, readonly navigator: Navigator) {}
 
@@ -42,27 +64,20 @@ class Rover {
 		return new Rover(position, navigator);
 	}
 
-	public rotateLeft() {
-		const navigator = this.navigator.rotateLeft();
-		return new Rover(this.position, navigator);
+	execute(command: CommandUnion) {
+		switch (command.action) {
+			case 'rotateLeft':
+				return new Rover(this.position, this.navigator.rotateLeft());
+			case 'rotateRight':
+				return new Rover(this.position, this.navigator.rotateRight());
+			case 'moveForward':
+				return new Rover(this.navigator.moveForward(this.position), this.navigator);
+			case 'moveBackward':
+				return new Rover(this.navigator.moveBackward(this.position), this.navigator);
+		}
 	}
 
-	public rotateRight() {
-		const navigator = this.navigator.rotateRight();
-		return new Rover(this.position, navigator);
-	}
-
-	public moveBackward() {
-		const position = this.navigator.moveBackward(this.position);
-		return new Rover(position, this.navigator);
-	}
-
-	public moveForward() {
-		const position = this.navigator.moveForward(this.position);
-		return new Rover(position, this.navigator);
-	}
-
-	toString() {
+	printLocation() {
 		return `${this.position.x} ${this.position.y} ${this.navigator.compass()}`;
 	}
 }
@@ -77,19 +92,20 @@ export class RoverController {
 		const commands = rawCommands.split('');
 		commands.forEach((command) => {
 			if (command === 'F') {
-				this.rover = this.rover.moveForward();
+				const moveFordwardCommand = new MoveForwardCommand();
+				this.rover = this.rover.execute(moveFordwardCommand);
 			}
 			if (command === 'B') {
-				this.rover = this.rover.moveBackward();
+				this.rover = this.rover.execute(new MoveBackwardCommand());
 			}
 			if (command === 'R') {
-				this.rover = this.rover.rotateRight();
+				this.rover = this.rover.execute(new RotateRightCommand());
 			}
 			if (command === 'L') {
-				this.rover = this.rover.rotateLeft();
+				this.rover = this.rover.execute(new RotateLeftCommand());
 			}
 		});
 
-		return this.rover.toString();
+		return this.rover.printLocation();
 	}
 }
