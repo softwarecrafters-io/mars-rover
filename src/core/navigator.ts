@@ -1,4 +1,4 @@
-import { Position } from './roverController';
+import { Position } from './position';
 
 enum CardinalPoint {
 	North = 'N',
@@ -15,17 +15,34 @@ export interface Navigator {
 	rotateLeft(): Navigator;
 }
 
+export class NavigatorFactory {
+	static createFrom(orientation: string) {
+		switch (orientation) {
+			case CardinalPoint.North:
+				return new NavigatorFacingNorth();
+			case CardinalPoint.East:
+				return new NavigatorFacingEast();
+			case CardinalPoint.South:
+				return new NavigatorFacingSouth();
+			case CardinalPoint.West:
+				return new NavigatorFacingWest();
+			default:
+				throw new Error('Unsupported orientation');
+		}
+	}
+}
+
 export class NavigatorFacingNorth implements Navigator {
 	compass() {
 		return CardinalPoint.North;
 	}
 
 	moveForward(position: Position) {
-		return new Position(position.x, position.y + 1);
+		return position.increaseY(1);
 	}
 
 	moveBackward(position: Position) {
-		return new Position(position.x, position.y - 1);
+		return position.increaseY(-1);
 	}
 
 	rotateRight(): Navigator {
@@ -37,17 +54,39 @@ export class NavigatorFacingNorth implements Navigator {
 	}
 }
 
+export class NavigatorFacingSouth implements Navigator {
+	compass() {
+		return CardinalPoint.South;
+	}
+
+	moveForward(position: Position) {
+		return position.increaseY(-1);
+	}
+
+	moveBackward(position: Position) {
+		return position.increaseY(1);
+	}
+
+	rotateRight(): Navigator {
+		return new NavigatorFacingWest();
+	}
+
+	rotateLeft(): Navigator {
+		return new NavigatorFacingEast();
+	}
+}
+
 export class NavigatorFacingEast implements Navigator {
 	compass() {
 		return CardinalPoint.East;
 	}
 
 	moveForward(position: Position) {
-		return new Position(position.x + 1, position.y);
+		return position.increaseX(1);
 	}
 
 	moveBackward(position: Position) {
-		return new Position(position.x - 1, position.y);
+		return position.increaseX(-1);
 	}
 
 	rotateRight(): Navigator {
@@ -59,39 +98,17 @@ export class NavigatorFacingEast implements Navigator {
 	}
 }
 
-export class NavigatorFacingSouth implements Navigator {
-	compass() {
-		return CardinalPoint.South;
-	}
-
-	moveForward(position: Position) {
-		return new Position(position.x, position.y - 1);
-	}
-
-	moveBackward(position: Position) {
-		return new Position(position.x, position.y + 1);
-	}
-
-	rotateRight(): Navigator {
-		return new NavigatorFacingWest();
-	}
-
-	rotateLeft(): Navigator {
-		return new NavigatorFacingEast();
-	}
-}
-
 export class NavigatorFacingWest implements Navigator {
 	compass() {
 		return CardinalPoint.West;
 	}
 
 	moveForward(position: Position) {
-		return new Position(position.x - 1, position.y);
+		return position.increaseX(-1);
 	}
 
 	moveBackward(position: Position) {
-		return new Position(position.x + 1, position.y);
+		return position.increaseX(1);
 	}
 
 	rotateRight(): Navigator {
