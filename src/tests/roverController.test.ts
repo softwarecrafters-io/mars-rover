@@ -1,16 +1,10 @@
 import { RoverController } from '../core/roverController';
 import { Rover } from '../core/rover';
 import { NavigatorFactory } from '../core/navigator';
+import { Coordinates } from '../core/coordinates';
 
-class Planet {
-	constructor(readonly width: number, readonly height: number) {}
-}
-
-function createRoverController(initialLocation: string) {
-	const navigator = NavigatorFactory.createFromLocation(initialLocation);
-	const rover = new Rover(navigator);
-	const roverController = new RoverController(rover);
-	return roverController;
+export class Planet {
+	constructor(readonly maximumCoordinates: Coordinates) {}
 }
 
 describe('The Mars Rover', () => {
@@ -118,4 +112,24 @@ describe('The Mars Rover', () => {
 
 		expect(result).toBe(expectedLocation);
 	});
+
+	it.each([
+		['0 9 N', '0 0 N'],
+		//['9 0 E', '0 0 E'],
+		//['0 0 S', '0 9 S'],
+		//['0 0 W', '9 0 W'],
+	])('moves forward one step in the limits of the planet (%p)', (initialLocation, expectedLocation) => {
+		const roverController = createRoverController(initialLocation);
+
+		const result = roverController.process('F');
+
+		expect(result).toBe(expectedLocation);
+	});
 });
+
+function createRoverController(initialLocation: string) {
+	const planet = new Planet(new Coordinates(10, 10));
+	const navigator = NavigatorFactory.createFrom(initialLocation, planet);
+	const rover = new Rover(navigator);
+	return new RoverController(rover);
+}

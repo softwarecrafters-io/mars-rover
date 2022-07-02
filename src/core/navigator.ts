@@ -1,4 +1,5 @@
-import { Position } from './position';
+import { Coordinates } from './coordinates';
+import { Planet } from '../tests/roverController.test';
 
 enum CardinalPoint {
 	North = 'N',
@@ -17,28 +18,28 @@ export interface Navigator {
 }
 
 export class NavigatorFactory {
-	static createFromLocation(rawLocation: string) {
+	static createFrom(rawLocation: string, planet: Planet) {
 		const location = rawLocation.split(' ');
 		const x = Number.parseInt(location[0]);
 		const y = Number.parseInt(location[1]);
 		if (isNaN(x) || isNaN(y)) {
 			throw new Error('Malformed location');
 		}
-		const position = Position.createFrom(x, y);
+		const coordinates = Coordinates.createFrom(x, y);
 		const orientation = location[2];
-		return this.createFrom(position, orientation);
+		return this.create(coordinates, orientation, planet);
 	}
 
-	static createFrom(position: Position, orientation: string) {
+	static create(coordinates: Coordinates, orientation: string, planet: Planet) {
 		switch (orientation) {
 			case CardinalPoint.North:
-				return new NavigatorFacingNorth(position);
+				return new NavigatorFacingNorth(coordinates, planet);
 			case CardinalPoint.East:
-				return new NavigatorFacingEast(position);
+				return new NavigatorFacingEast(coordinates, planet);
 			case CardinalPoint.South:
-				return new NavigatorFacingSouth(position);
+				return new NavigatorFacingSouth(coordinates, planet);
 			case CardinalPoint.West:
-				return new NavigatorFacingWest(position);
+				return new NavigatorFacingWest(coordinates, planet);
 			default:
 				throw new Error('Unsupported orientation');
 		}
@@ -46,112 +47,113 @@ export class NavigatorFactory {
 }
 
 export class NavigatorFacingNorth implements Navigator {
-	constructor(readonly position: Position) {}
+	constructor(readonly coordinates: Coordinates, private readonly planet: Planet) {}
 	compass() {
 		return CardinalPoint.North;
 	}
 
 	moveForward() {
-		return new NavigatorFacingNorth(this.position.increaseY(1));
+		const coordinates = this.coordinates.increaseY(1);
+		return new NavigatorFacingNorth(coordinates, this.planet);
 	}
 
 	moveBackward() {
-		return new NavigatorFacingNorth(this.position.increaseY(-1));
+		return new NavigatorFacingNorth(this.coordinates.increaseY(-1), this.planet);
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingEast(this.position);
+		return new NavigatorFacingEast(this.coordinates, this.planet);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingWest(this.position);
+		return new NavigatorFacingWest(this.coordinates, this.planet);
 	}
 
 	formattedLocation() {
-		return `${this.position.toString()} ${this.compass()}`;
+		return `${this.coordinates.toString()} ${this.compass()}`;
 	}
 }
 
 export class NavigatorFacingSouth implements Navigator {
-	constructor(readonly position: Position) {}
+	constructor(readonly coordinates: Coordinates, private readonly planet: Planet) {}
 
 	compass() {
 		return CardinalPoint.South;
 	}
 
 	moveForward() {
-		return new NavigatorFacingSouth(this.position.increaseY(-1));
+		return new NavigatorFacingSouth(this.coordinates.increaseY(-1), this.planet);
 	}
 
 	moveBackward() {
-		return new NavigatorFacingSouth(this.position.increaseY(1));
+		return new NavigatorFacingSouth(this.coordinates.increaseY(1), this.planet);
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingWest(this.position);
+		return new NavigatorFacingWest(this.coordinates, this.planet);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingEast(this.position);
+		return new NavigatorFacingEast(this.coordinates, this.planet);
 	}
 
 	formattedLocation() {
-		return `${this.position.toString()} ${this.compass()}`;
+		return `${this.coordinates.toString()} ${this.compass()}`;
 	}
 }
 
 export class NavigatorFacingEast implements Navigator {
-	constructor(readonly position: Position) {}
+	constructor(readonly coordinates: Coordinates, private readonly planet: Planet) {}
 
 	compass() {
 		return CardinalPoint.East;
 	}
 
 	moveForward() {
-		return new NavigatorFacingEast(this.position.increaseX(1));
+		return new NavigatorFacingEast(this.coordinates.increaseX(1), this.planet);
 	}
 
 	moveBackward() {
-		return new NavigatorFacingEast(this.position.increaseX(-1));
+		return new NavigatorFacingEast(this.coordinates.increaseX(-1), this.planet);
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingSouth(this.position);
+		return new NavigatorFacingSouth(this.coordinates, this.planet);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingNorth(this.position);
+		return new NavigatorFacingNorth(this.coordinates, this.planet);
 	}
 
 	formattedLocation() {
-		return `${this.position.toString()} ${this.compass()}`;
+		return `${this.coordinates.toString()} ${this.compass()}`;
 	}
 }
 
 export class NavigatorFacingWest implements Navigator {
-	constructor(readonly position: Position) {}
+	constructor(readonly coordinates: Coordinates, private readonly planet: Planet) {}
 
 	compass() {
 		return CardinalPoint.West;
 	}
 
 	moveForward() {
-		return new NavigatorFacingWest(this.position.increaseX(-1));
+		return new NavigatorFacingWest(this.coordinates.increaseX(-1), this.planet);
 	}
 
 	moveBackward() {
-		return new NavigatorFacingWest(this.position.increaseX(1));
+		return new NavigatorFacingWest(this.coordinates.increaseX(1), this.planet);
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingNorth(this.position);
+		return new NavigatorFacingNorth(this.coordinates, this.planet);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingSouth(this.position);
+		return new NavigatorFacingSouth(this.coordinates, this.planet);
 	}
 
 	formattedLocation() {
-		return `${this.position.toString()} ${this.compass()}`;
+		return `${this.coordinates.toString()} ${this.compass()}`;
 	}
 }
