@@ -2,10 +2,7 @@ import { RoverController } from '../core/roverController';
 import { Rover } from '../core/rover';
 import { NavigatorFactory } from '../core/navigator';
 import { Coordinates } from '../core/coordinates';
-
-export class Planet {
-	constructor(readonly maximumCoordinates: Coordinates) {}
-}
+import { Planet } from '../core/planet';
 
 describe('The Mars Rover', () => {
 	it.each([
@@ -21,8 +18,8 @@ describe('The Mars Rover', () => {
 
 	it.each([
 		['0 0 N', '0 1 N'],
-		['0 0 E', '1 0 E'],
 		['0 1 S', '0 0 S'],
+		['0 0 E', '1 0 E'],
 		['1 0 W', '0 0 W'],
 	])('moves forward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
 		const roverController = createRoverController(initialLocation);
@@ -34,8 +31,8 @@ describe('The Mars Rover', () => {
 
 	it.each([
 		['0 1 N', '0 0 N'],
-		['1 0 E', '0 0 E'],
 		['0 0 S', '0 1 S'],
+		['1 0 E', '0 0 E'],
 		['0 0 W', '1 0 W'],
 	])('moves backward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
 		const roverController = createRoverController(initialLocation);
@@ -73,8 +70,8 @@ describe('The Mars Rover', () => {
 
 	it.each([
 		['0 0 N', '0 3 N'],
-		['0 0 E', '3 0 E'],
 		['0 3 S', '0 0 S'],
+		['0 0 E', '3 0 E'],
 		['3 0 W', '0 0 W'],
 	])(
 		'moves forward multiple step in the axis for a given forward command (%p)',
@@ -89,8 +86,8 @@ describe('The Mars Rover', () => {
 
 	it.each([
 		['0 3 N', '0 0 N'],
-		['3 0 E', '0 0 E'],
 		['0 0 S', '0 3 S'],
+		['3 0 E', '0 0 E'],
 		['0 0 W', '3 0 W'],
 	])(
 		'moves backward multiple step in the axis for a given forward command (%p)',
@@ -114,21 +111,34 @@ describe('The Mars Rover', () => {
 	});
 
 	it.each([
-		['0 9 N', '0 0 N'],
-		//['9 0 E', '0 0 E'],
-		//['0 0 S', '0 9 S'],
-		//['0 0 W', '9 0 W'],
-	])('moves forward one step in the limits of the planet (%p)', (initialLocation, expectedLocation) => {
+		['0 10 N', '0 0 N'],
+		['0 0 S', '0 10 S'],
+		['10 0 E', '0 0 E'],
+		['0 0 W', '10 0 W'],
+	])('moves forward one step in the boundary coordinates of the planet (%p)', (initialLocation, expectedLocation) => {
 		const roverController = createRoverController(initialLocation);
 
 		const result = roverController.process('F');
 
 		expect(result).toBe(expectedLocation);
 	});
+
+	it.each([
+		['0 0 N', '0 10 N'],
+		['0 10 S', '0 0 S'],
+		['0 0 E', '10 0 E'],
+		['10 0 W', '0 0 W'],
+	])('moves backward one step in the boundary coordinates of the planet (%p)', (initialLocation, expectedLocation) => {
+		const roverController = createRoverController(initialLocation);
+
+		const result = roverController.process('B');
+
+		expect(result).toBe(expectedLocation);
+	});
 });
 
 function createRoverController(initialLocation: string) {
-	const planet = new Planet(new Coordinates(10, 10));
+	const planet = new Planet(Coordinates.create(10, 10));
 	const navigator = NavigatorFactory.createFrom(initialLocation, planet);
 	const rover = new Rover(navigator);
 	return new RoverController(rover);

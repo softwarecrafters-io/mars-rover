@@ -1,18 +1,18 @@
 import { NavigatorFactory } from '../core/navigator';
-import { Planet } from './roverController.test';
 import { Coordinates } from '../core/coordinates';
+import { Planet } from '../core/planet';
 
 describe('The Navigator', () => {
 	it('malformed raw location are not allowed', () => {
 		expect(() => {
-			const planet = new Planet(new Coordinates(10, 10));
-			return NavigatorFactory.createFrom('z z N', planet);
-		}).toThrow('Malformed location');
+			const planet = new Planet(Coordinates.create(10, 10));
+			return NavigatorFactory.createFrom('asdg', planet);
+		}).toThrow('Malformed raw location');
 	});
 
 	it('unexpected orientation are not allowed', () => {
 		expect(() => {
-			const planet = new Planet(new Coordinates(10, 10));
+			const planet = new Planet(Coordinates.create(10, 10));
 			return NavigatorFactory.createFrom('0 0 P', planet);
 		}).toThrow('Unsupported orientation');
 	});

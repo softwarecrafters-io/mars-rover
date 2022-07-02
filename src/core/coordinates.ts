@@ -1,22 +1,47 @@
 export class Coordinates {
-	constructor(private readonly x: number, private readonly y: number) {}
+	private constructor(readonly latitude: number, readonly longitude: number) {}
 
-	static createFrom(x: number, y: number) {
-		if (x < 0 || y < 0) {
+	static create(latitude: number, longitude: number) {
+		if (latitude < 0 || longitude < 0) {
 			throw new Error('Negative numbers are not allowed');
 		}
-		return new Coordinates(x, y);
+		return new Coordinates(latitude, longitude);
 	}
 
-	increaseX(stepSize: number) {
-		return new Coordinates(this.x + stepSize, this.y);
+	static createFrom(latitude: string, longitude: string) {
+		const parsedLatitude = Number.parseInt(latitude);
+		const parsedLongitude = Number.parseInt(longitude);
+		if (isNaN(parsedLatitude) || isNaN(parsedLongitude)) {
+			throw new Error('Malformed coordinates');
+		}
+		return Coordinates.create(parsedLatitude, parsedLongitude);
 	}
 
-	increaseY(stepSize: number) {
-		return new Coordinates(this.x, this.y + stepSize);
+	increaseLatitude(stepSize: number) {
+		return new Coordinates(this.latitude + stepSize, this.longitude);
+	}
+
+	increaseLongitude(stepSize: number) {
+		return new Coordinates(this.latitude, this.longitude + stepSize);
 	}
 
 	toString() {
-		return `${this.x} ${this.y}`;
+		return `${this.latitude} ${this.longitude}`;
+	}
+
+	isBoundaryLongitude(boundaryCoordinates: Coordinates) {
+		return this.longitude === boundaryCoordinates.longitude;
+	}
+
+	isBoundaryLatitude(boundaryCoordinates: Coordinates) {
+		return this.latitude === boundaryCoordinates.latitude;
+	}
+
+	isInitialLongitude() {
+		return this.longitude === 0;
+	}
+
+	isInitialLatitude() {
+		return this.latitude === 0;
 	}
 }
