@@ -8,24 +8,37 @@ enum CardinalPoint {
 }
 
 export interface Navigator {
-	moveForward(position: Position): Position;
-	moveBackward(position: Position): Position;
+	formattedLocation(): string;
+	moveForward(): Navigator;
+	moveBackward(): Navigator;
 	compass(): CardinalPoint;
 	rotateRight(): Navigator;
 	rotateLeft(): Navigator;
 }
 
 export class NavigatorFactory {
-	static createFrom(orientation: string) {
+	static createFromLocation(rawLocation: string) {
+		const location = rawLocation.split(' ');
+		const x = Number.parseInt(location[0]);
+		const y = Number.parseInt(location[1]);
+		if (isNaN(x) || isNaN(y)) {
+			throw new Error('Malformed location');
+		}
+		const position = Position.createFrom(x, y);
+		const orientation = location[2];
+		return this.createFrom(position, orientation);
+	}
+
+	static createFrom(position: Position, orientation: string) {
 		switch (orientation) {
 			case CardinalPoint.North:
-				return new NavigatorFacingNorth();
+				return new NavigatorFacingNorth(position);
 			case CardinalPoint.East:
-				return new NavigatorFacingEast();
+				return new NavigatorFacingEast(position);
 			case CardinalPoint.South:
-				return new NavigatorFacingSouth();
+				return new NavigatorFacingSouth(position);
 			case CardinalPoint.West:
-				return new NavigatorFacingWest();
+				return new NavigatorFacingWest(position);
 			default:
 				throw new Error('Unsupported orientation');
 		}
@@ -33,89 +46,112 @@ export class NavigatorFactory {
 }
 
 export class NavigatorFacingNorth implements Navigator {
+	constructor(readonly position: Position) {}
 	compass() {
 		return CardinalPoint.North;
 	}
 
-	moveForward(position: Position) {
-		return position.increaseY(1);
+	moveForward() {
+		return new NavigatorFacingNorth(this.position.increaseY(1));
 	}
 
-	moveBackward(position: Position) {
-		return position.increaseY(-1);
+	moveBackward() {
+		return new NavigatorFacingNorth(this.position.increaseY(-1));
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingEast();
+		return new NavigatorFacingEast(this.position);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingWest();
+		return new NavigatorFacingWest(this.position);
+	}
+
+	formattedLocation() {
+		return `${this.position.toString()} ${this.compass()}`;
 	}
 }
 
 export class NavigatorFacingSouth implements Navigator {
+	constructor(readonly position: Position) {}
+
 	compass() {
 		return CardinalPoint.South;
 	}
 
-	moveForward(position: Position) {
-		return position.increaseY(-1);
+	moveForward() {
+		return new NavigatorFacingSouth(this.position.increaseY(-1));
 	}
 
-	moveBackward(position: Position) {
-		return position.increaseY(1);
+	moveBackward() {
+		return new NavigatorFacingSouth(this.position.increaseY(1));
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingWest();
+		return new NavigatorFacingWest(this.position);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingEast();
+		return new NavigatorFacingEast(this.position);
+	}
+
+	formattedLocation() {
+		return `${this.position.toString()} ${this.compass()}`;
 	}
 }
 
 export class NavigatorFacingEast implements Navigator {
+	constructor(readonly position: Position) {}
+
 	compass() {
 		return CardinalPoint.East;
 	}
 
-	moveForward(position: Position) {
-		return position.increaseX(1);
+	moveForward() {
+		return new NavigatorFacingEast(this.position.increaseX(1));
 	}
 
-	moveBackward(position: Position) {
-		return position.increaseX(-1);
+	moveBackward() {
+		return new NavigatorFacingEast(this.position.increaseX(-1));
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingSouth();
+		return new NavigatorFacingSouth(this.position);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingNorth();
+		return new NavigatorFacingNorth(this.position);
+	}
+
+	formattedLocation() {
+		return `${this.position.toString()} ${this.compass()}`;
 	}
 }
 
 export class NavigatorFacingWest implements Navigator {
+	constructor(readonly position: Position) {}
+
 	compass() {
 		return CardinalPoint.West;
 	}
 
-	moveForward(position: Position) {
-		return position.increaseX(-1);
+	moveForward() {
+		return new NavigatorFacingWest(this.position.increaseX(-1));
 	}
 
-	moveBackward(position: Position) {
-		return position.increaseX(1);
+	moveBackward() {
+		return new NavigatorFacingWest(this.position.increaseX(1));
 	}
 
 	rotateRight(): Navigator {
-		return new NavigatorFacingNorth();
+		return new NavigatorFacingNorth(this.position);
 	}
 
 	rotateLeft(): Navigator {
-		return new NavigatorFacingSouth();
+		return new NavigatorFacingSouth(this.position);
+	}
+
+	formattedLocation() {
+		return `${this.position.toString()} ${this.compass()}`;
 	}
 }

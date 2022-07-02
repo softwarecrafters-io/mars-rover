@@ -1,16 +1,16 @@
 import { Rover } from './rover';
-import { RoverCommand } from './roverCommand';
+import { Command } from './command';
 
 export class RoverController {
 	constructor(private readonly rover: Rover) {}
 
 	process(rawCommands: string) {
-		const commands = RoverCommand.translate(rawCommands);
+		const commands = Command.translate(rawCommands);
 		const rover = this.executeCommands(commands, this.rover);
-		return rover.currentLocation();
+		return rover.formattedLocation();
 	}
 
-	private executeCommands = (commands: ReadonlyArray<RoverCommand>, rover: Rover): Rover => {
+	private executeCommands = (commands: ReadonlyArray<Command>, rover: Rover): Rover => {
 		const isEmptyCommands = commands.length == 0;
 		if (isEmptyCommands) {
 			return rover;

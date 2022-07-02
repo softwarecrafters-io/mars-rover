@@ -1,4 +1,4 @@
-export class RoverCommand {
+export class Command {
 	constructor(private readonly value: 'F' | 'B' | 'L' | 'R') {}
 
 	static create(rawCommand: string) {
@@ -6,11 +6,11 @@ export class RoverCommand {
 		if (isNotValidCommand) {
 			throw new Error('Invalid command');
 		}
-		return new RoverCommand(rawCommand);
+		return new Command(rawCommand);
 	}
 
 	static translate(rawCommands: string) {
-		return rawCommands.split('').map((c) => RoverCommand.create(c));
+		return rawCommands.split('').map((c) => Command.create(c));
 	}
 
 	isForward() {

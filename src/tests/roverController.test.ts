@@ -1,8 +1,16 @@
 import { RoverController } from '../core/roverController';
 import { Rover } from '../core/rover';
+import { NavigatorFactory } from '../core/navigator';
 
 class Planet {
 	constructor(readonly width: number, readonly height: number) {}
+}
+
+function createRoverController(initialLocation: string) {
+	const navigator = NavigatorFactory.createFromLocation(initialLocation);
+	const rover = new Rover(navigator);
+	const roverController = new RoverController(rover);
+	return roverController;
 }
 
 describe('The Mars Rover', () => {
@@ -10,9 +18,9 @@ describe('The Mars Rover', () => {
 		['0 0 N', '0 0 N'],
 		['1 1 W', '1 1 W'],
 	])('stays in initial location (%p) for a given empty command', (initialLocation, expectedLocation) => {
-		const rover = new RoverController(Rover.createFrom(initialLocation));
+		const roverController = createRoverController(initialLocation);
 
-		const result = rover.process('');
+		const result = roverController.process('');
 
 		expect(result).toBe(expectedLocation);
 	});
@@ -23,9 +31,9 @@ describe('The Mars Rover', () => {
 		['0 1 S', '0 0 S'],
 		['1 0 W', '0 0 W'],
 	])('moves forward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new RoverController(Rover.createFrom(initialLocation));
+		const roverController = createRoverController(initialLocation);
 
-		const result = rover.process('F');
+		const result = roverController.process('F');
 
 		expect(result).toBe(expectedLocation);
 	});
@@ -36,9 +44,9 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 1 S'],
 		['0 0 W', '1 0 W'],
 	])('moves backward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new RoverController(Rover.createFrom(initialLocation));
+		const roverController = createRoverController(initialLocation);
 
-		const result = rover.process('B');
+		const result = roverController.process('B');
 
 		expect(result).toBe(expectedLocation);
 	});
@@ -49,7 +57,7 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 0 W'],
 		['0 0 W', '0 0 N'],
 	])('rotates 90 degrees to the right for a given right rotation command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new RoverController(Rover.createFrom(initialLocation));
+		const rover = createRoverController(initialLocation);
 
 		const result = rover.process('R');
 
@@ -62,9 +70,9 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 0 E'],
 		['0 0 E', '0 0 N'],
 	])('rotates 90 degrees to the left for a given left rotation command (%p)', (initialLocation, expectedLocation) => {
-		const rover = new RoverController(Rover.createFrom(initialLocation));
+		const roverController = createRoverController(initialLocation);
 
-		const result = rover.process('L');
+		const result = roverController.process('L');
 
 		expect(result).toBe(expectedLocation);
 	});
@@ -77,9 +85,9 @@ describe('The Mars Rover', () => {
 	])(
 		'moves forward multiple step in the axis for a given forward command (%p)',
 		(initialLocation, expectedLocation) => {
-			const rover = new RoverController(Rover.createFrom(initialLocation));
+			const roverController = createRoverController(initialLocation);
 
-			const result = rover.process('FFF');
+			const result = roverController.process('FFF');
 
 			expect(result).toBe(expectedLocation);
 		}
@@ -93,9 +101,9 @@ describe('The Mars Rover', () => {
 	])(
 		'moves backward multiple step in the axis for a given forward command (%p)',
 		(initialLocation, expectedLocation) => {
-			const rover = new RoverController(Rover.createFrom(initialLocation));
+			const roverController = createRoverController(initialLocation);
 
-			const result = rover.process('BBB');
+			const result = roverController.process('BBB');
 
 			expect(result).toBe(expectedLocation);
 		}
@@ -104,10 +112,9 @@ describe('The Mars Rover', () => {
 	it('moves and rotates multiple times for a given command sequence', () => {
 		const initialLocation = '0 0 N';
 		const expectedLocation = '2 2 S';
-		const planet = new Planet(10, 10);
-		const rover = new RoverController(Rover.createFrom(initialLocation));
+		const roverController = createRoverController(initialLocation);
 
-		const result = rover.process('FFRFFFBRRL');
+		const result = roverController.process('FFRFFFBRRL');
 
 		expect(result).toBe(expectedLocation);
 	});

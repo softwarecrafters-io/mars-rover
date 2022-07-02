@@ -1,36 +1,25 @@
-import { Navigator, NavigatorFactory } from './navigator';
-import { RoverCommand } from './roverCommand';
-import { Position } from './position';
+import { Navigator } from './navigator';
+import { Command } from './command';
 
 export class Rover {
-	private constructor(readonly currentPosition: Position, readonly navigator: Navigator) {}
+	constructor(private readonly navigator: Navigator) {}
 
-	static createFrom(initialLocation: string) {
-		const location = initialLocation.split(' ');
-		const x = Number(location[0]);
-		const y = Number(location[1]);
-		const position = Position.createFrom(x, y);
-		const orientation = location[2];
-		const navigator = NavigatorFactory.createFrom(orientation);
-		return new Rover(position, navigator);
-	}
-
-	execute(command: RoverCommand) {
+	execute(command: Command) {
 		if (command.isForward()) {
-			return new Rover(this.navigator.moveForward(this.currentPosition), this.navigator);
+			return new Rover(this.navigator.moveForward());
 		}
 		if (command.isBackward()) {
-			return new Rover(this.navigator.moveBackward(this.currentPosition), this.navigator);
+			return new Rover(this.navigator.moveBackward());
 		}
 		if (command.isRotateLeft()) {
-			return new Rover(this.currentPosition, this.navigator.rotateLeft());
+			return new Rover(this.navigator.rotateLeft());
 		}
 		if (command.isRotateRight()) {
-			return new Rover(this.currentPosition, this.navigator.rotateRight());
+			return new Rover(this.navigator.rotateRight());
 		}
 	}
 
-	currentLocation() {
-		return `${this.currentPosition.toString()} ${this.navigator.compass()}`;
+	formattedLocation() {
+		return this.navigator.formattedLocation();
 	}
 }
