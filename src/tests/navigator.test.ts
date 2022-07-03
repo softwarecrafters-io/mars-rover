@@ -1,6 +1,6 @@
-import { NavigatorFactory } from '../core/navigator';
 import { Coordinates } from '../core/coordinates';
 import { Planet } from '../core/planet';
+import { NavigatorFactory } from '../core/navigator/navigator';
 
 describe('The Navigator', () => {
 	it('malformed raw location are not allowed', () => {

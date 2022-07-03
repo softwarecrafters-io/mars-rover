@@ -1,5 +1,5 @@
-import { Navigator } from './navigator';
 import { Command } from './command';
+import { Navigator } from './navigator/navigator';
 
 export class Rover {
 	constructor(private readonly navigator: Navigator) {}

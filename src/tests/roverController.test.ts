@@ -1,8 +1,8 @@
 import { RoverController } from '../core/roverController';
 import { Rover } from '../core/rover';
-import { NavigatorFactory } from '../core/navigator';
 import { Coordinates } from '../core/coordinates';
 import { Planet } from '../core/planet';
+import { NavigatorFactory } from '../core/navigator/navigator';
 
 describe('The Mars Rover', () => {
 	it.each([
