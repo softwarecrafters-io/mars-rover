@@ -29,11 +29,11 @@ export class Coordinates {
 		return `${this.latitude} ${this.longitude}`;
 	}
 
-	isBoundaryLongitude(boundaryCoordinates: Coordinates) {
+	isEqualLongitude(boundaryCoordinates: Coordinates) {
 		return this.longitude === boundaryCoordinates.longitude;
 	}
 
-	isBoundaryLatitude(boundaryCoordinates: Coordinates) {
+	isEqualLatitude(boundaryCoordinates: Coordinates) {
 		return this.latitude === boundaryCoordinates.latitude;
 	}
 
@@ -43,5 +43,9 @@ export class Coordinates {
 
 	isInitialLatitude() {
 		return this.latitude === 0;
+	}
+
+	isEqual(coordinates: Coordinates) {
+		return this.latitude === coordinates.latitude && this.longitude === coordinates.longitude;
 	}
 }

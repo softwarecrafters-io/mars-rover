@@ -135,10 +135,94 @@ describe('The Mars Rover', () => {
 
 		expect(result).toBe(expectedLocation);
 	});
+
+	it.each([
+		['0 0 N', '0 10 N'],
+		['0 10 S', '0 0 S'],
+		['0 0 E', '10 0 E'],
+		['10 0 W', '0 0 W'],
+	])('moves backward one step in the boundary coordinates of the planet (%p)', (initialLocation, expectedLocation) => {
+		const roverController = createRoverController(initialLocation);
+
+		const result = roverController.process('B');
+
+		expect(result).toBe(expectedLocation);
+	});
+
+	it.each([
+		['0 0 N', '0 0 N'],
+		['0 2 S', '0 2 S'],
+	])(
+		'is not able to move forward when it finds an obstacle in the longitude (%p)',
+		(initialLocation, expectedLocation) => {
+			const obstacles = [Coordinates.create(0, 1)];
+			const roverController = createRoverController(initialLocation, obstacles);
+
+			const result = roverController.process('F');
+
+			expect(result).toBe(expectedLocation);
+		}
+	);
+
+	it.each([
+		['0 0 E', '0 0 E'],
+		['2 0 W', '2 0 W'],
+	])(
+		'is not able to move forward when it finds an obstacle in the latitude (%p)',
+		(initialLocation, expectedLocation) => {
+			const obstacles = [Coordinates.create(1, 0)];
+			const roverController = createRoverController(initialLocation, obstacles);
+
+			const result = roverController.process('F');
+
+			expect(result).toBe(expectedLocation);
+		}
+	);
+
+	it.each([
+		['0 2 N', '0 2 N'],
+		['0 0 S', '0 0 S'],
+	])(
+		'is not able to move backward when it finds an obstacle in the longitude (%p)',
+		(initialLocation, expectedLocation) => {
+			const obstacles = [Coordinates.create(0, 1)];
+			const roverController = createRoverController(initialLocation, obstacles);
+
+			const result = roverController.process('B');
+
+			expect(result).toBe(expectedLocation);
+		}
+	);
+
+	it.each([
+		['2 0 E', '2 0 E'],
+		['0 0 W', '0 0 W'],
+	])(
+		'is not able to move backward when it finds an obstacle in the latitude (%p)',
+		(initialLocation, expectedLocation) => {
+			const obstacles = [Coordinates.create(1, 0)];
+			const roverController = createRoverController(initialLocation, obstacles);
+
+			const result = roverController.process('B');
+
+			expect(result).toBe(expectedLocation);
+		}
+	);
+
+	it('avoids several obstacles after colliding with them with the proper command sequence', () => {
+		const initialLocation = '0 0 N';
+		const expectedLocation = '1 1 N';
+		const obstacles = [Coordinates.create(0, 1), Coordinates.create(2, 0)];
+		const roverController = createRoverController(initialLocation, obstacles);
+
+		const result = roverController.process('FRFFLF');
+
+		expect(result).toBe(expectedLocation);
+	});
 });
 
-function createRoverController(initialLocation: string) {
-	const planet = new Planet(Coordinates.create(10, 10));
+function createRoverController(initialLocation: string, obstacles: ReadonlyArray<Coordinates> = []) {
+	const planet = new Planet(Coordinates.create(10, 10), obstacles);
 	const navigator = NavigatorFactory.createFrom(initialLocation, planet);
 	const rover = new Rover(navigator);
 	return new RoverController(rover);

@@ -52,18 +52,33 @@ export class NavigatorFacingNorth implements Navigator {
 	}
 
 	moveForward() {
-		const stepSizeForInitialLongitude = -this.planet.boundaryCoordinates.longitude;
-		const coordinates = this.coordinates.isBoundaryLongitude(this.planet.boundaryCoordinates)
-			? this.coordinates.increaseLongitude(stepSizeForInitialLongitude)
-			: this.coordinates.increaseLongitude(1);
+		const coordinates = this.calculateForwardCoordinates();
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
 		return new NavigatorFacingNorth(coordinates, this.planet);
 	}
 
+	private calculateForwardCoordinates() {
+		const stepSizeForInitialLongitude = -this.planet.boundaryLongitude();
+		return this.planet.isBoundaryLongitude(this.coordinates)
+			? this.coordinates.increaseLongitude(stepSizeForInitialLongitude)
+			: this.coordinates.increaseLongitude(1);
+	}
+
 	moveBackward() {
-		const coordinates = this.coordinates.isInitialLongitude()
-			? this.coordinates.increaseLongitude(this.planet.boundaryCoordinates.longitude)
-			: this.coordinates.increaseLongitude(-1);
+		const coordinates = this.calculateBackwardCoordinates();
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
 		return new NavigatorFacingNorth(coordinates, this.planet);
+	}
+
+	private calculateBackwardCoordinates() {
+		const coordinates = this.coordinates.isInitialLongitude()
+			? this.coordinates.increaseLongitude(this.planet.boundaryLongitude())
+			: this.coordinates.increaseLongitude(-1);
+		return coordinates;
 	}
 
 	rotateRight(): Navigator {
@@ -87,19 +102,35 @@ export class NavigatorFacingSouth implements Navigator {
 	}
 
 	moveForward() {
-		const stepSizeForInitialLongitude = this.planet.boundaryCoordinates.longitude;
-		const coordinates = this.coordinates.isInitialLongitude()
-			? this.coordinates.increaseLongitude(stepSizeForInitialLongitude)
-			: this.coordinates.increaseLongitude(-1);
+		const coordinates = this.calculateForwardCoordinates();
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
 		return new NavigatorFacingSouth(coordinates, this.planet);
 	}
 
+	private calculateForwardCoordinates() {
+		const stepSizeForInitialLongitude = this.planet.boundaryLongitude();
+		const coordinates = this.coordinates.isInitialLongitude()
+			? this.coordinates.increaseLongitude(stepSizeForInitialLongitude)
+			: this.coordinates.increaseLongitude(-1);
+		return coordinates;
+	}
+
 	moveBackward() {
-		const stepSizeForBoundaryLongitude = -this.planet.boundaryCoordinates.longitude;
-		const coordinates = this.coordinates.isBoundaryLongitude(this.planet.boundaryCoordinates)
+		const stepSizeForBoundaryLongitude = -this.planet.boundaryLongitude();
+		const coordinates = this.calculateBackwardCoordinates(stepSizeForBoundaryLongitude);
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
+		return new NavigatorFacingSouth(coordinates, this.planet);
+	}
+
+	private calculateBackwardCoordinates(stepSizeForBoundaryLongitude: number) {
+		const coordinates = this.planet.isBoundaryLongitude(this.coordinates)
 			? this.coordinates.increaseLongitude(stepSizeForBoundaryLongitude)
 			: this.coordinates.increaseLongitude(1);
-		return new NavigatorFacingSouth(coordinates, this.planet);
+		return coordinates;
 	}
 
 	rotateRight(): Navigator {
@@ -123,18 +154,34 @@ export class NavigatorFacingEast implements Navigator {
 	}
 
 	moveForward() {
-		const stepSizeForInitialLatitude = -this.planet.boundaryCoordinates.latitude;
-		const coordinates = this.coordinates.isBoundaryLatitude(this.planet.boundaryCoordinates)
-			? this.coordinates.increaseLatitude(stepSizeForInitialLatitude)
-			: this.coordinates.increaseLatitude(1);
+		const stepSizeForInitialLatitude = -this.planet.boundaryLatitude();
+		const coordinates = this.calculateForwardCoordinates(stepSizeForInitialLatitude);
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
 		return new NavigatorFacingEast(coordinates, this.planet);
 	}
 
+	private calculateForwardCoordinates(stepSizeForInitialLatitude: number) {
+		const coordinates = this.planet.isBoundaryLatitude(this.coordinates)
+			? this.coordinates.increaseLatitude(stepSizeForInitialLatitude)
+			: this.coordinates.increaseLatitude(1);
+		return coordinates;
+	}
+
 	moveBackward() {
-		const coordinates = this.coordinates.isInitialLatitude()
-			? this.coordinates.increaseLatitude(this.planet.boundaryCoordinates.latitude)
-			: this.coordinates.increaseLatitude(-1);
+		const coordinates = this.calculateBackwardCoordinates();
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
 		return new NavigatorFacingEast(coordinates, this.planet);
+	}
+
+	private calculateBackwardCoordinates() {
+		const coordinates = this.coordinates.isInitialLatitude()
+			? this.coordinates.increaseLatitude(this.planet.boundaryLatitude())
+			: this.coordinates.increaseLatitude(-1);
+		return coordinates;
 	}
 
 	rotateRight(): Navigator {
@@ -158,19 +205,35 @@ export class NavigatorFacingWest implements Navigator {
 	}
 
 	moveForward() {
-		const stepSizeForInitialLatitude = this.planet.boundaryCoordinates.latitude;
-		const coordinates = this.coordinates.isInitialLatitude()
-			? this.coordinates.increaseLatitude(stepSizeForInitialLatitude)
-			: this.coordinates.increaseLatitude(-1);
+		const coordinates = this.calculateForwardCoordinates();
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
 		return new NavigatorFacingWest(coordinates, this.planet);
 	}
 
+	private calculateForwardCoordinates() {
+		const stepSizeForInitialLatitude = this.planet.boundaryLatitude();
+		const coordinates = this.coordinates.isInitialLatitude()
+			? this.coordinates.increaseLatitude(stepSizeForInitialLatitude)
+			: this.coordinates.increaseLatitude(-1);
+		return coordinates;
+	}
+
 	moveBackward() {
-		const stepForBoundaryLatitude = -this.planet.boundaryCoordinates.latitude;
-		const coordinates = this.coordinates.isBoundaryLatitude(this.planet.boundaryCoordinates)
+		const coordinates = this.calculateBackwardCoordinates();
+		if (this.planet.hasObstacleAt(coordinates)) {
+			return this;
+		}
+		return new NavigatorFacingWest(coordinates, this.planet);
+	}
+
+	private calculateBackwardCoordinates() {
+		const stepForBoundaryLatitude = -this.planet.boundaryLatitude();
+		const coordinates = this.planet.isBoundaryLatitude(this.coordinates)
 			? this.coordinates.increaseLatitude(stepForBoundaryLatitude)
 			: this.coordinates.increaseLatitude(1);
-		return new NavigatorFacingWest(coordinates, this.planet);
+		return coordinates;
 	}
 
 	rotateRight(): Navigator {
