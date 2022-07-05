@@ -3,6 +3,7 @@ import { Coordinates } from '../coordinates';
 import { Planet } from '../planet';
 import { NavigatorFacingSouth } from './navigatorFacingSouth';
 import { NavigatorFacingNorth } from './navigatorFacingNorth';
+import { NavigatorCollidingObstacle } from './navigatorCollidingObstacle';
 
 export class NavigatorFacingEast implements Navigator {
 	constructor(readonly coordinates: Coordinates, private readonly planet: Planet) {}
@@ -15,7 +16,7 @@ export class NavigatorFacingEast implements Navigator {
 		const stepSizeForInitialLatitude = -this.planet.boundaryLatitude();
 		const coordinates = this.calculateForwardCoordinates(stepSizeForInitialLatitude);
 		if (this.planet.hasObstacleAt(coordinates)) {
-			return this;
+			return new NavigatorCollidingObstacle(this.coordinates, this.planet, this.compass());
 		}
 		return new NavigatorFacingEast(coordinates, this.planet);
 	}
@@ -29,7 +30,7 @@ export class NavigatorFacingEast implements Navigator {
 	moveBackward() {
 		const coordinates = this.calculateBackwardCoordinates();
 		if (this.planet.hasObstacleAt(coordinates)) {
-			return this;
+			return new NavigatorCollidingObstacle(this.coordinates, this.planet, this.compass());
 		}
 		return new NavigatorFacingEast(coordinates, this.planet);
 	}

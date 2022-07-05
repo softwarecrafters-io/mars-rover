@@ -151,7 +151,7 @@ describe('The Mars Rover', () => {
 
 	it.each([
 		['0 0 N', 'O 0 0 N'],
-		//['0 2 S', 'O 0 0 S'],
+		['0 2 S', 'O 0 2 S'],
 	])(
 		'prints its last location indicating that it has collided with an obstacle (%p)',
 		(initialLocation, expectedLocation) => {
@@ -165,10 +165,10 @@ describe('The Mars Rover', () => {
 	);
 
 	it.each([
-		['0 0 E', '0 0 E'],
-		['2 0 W', '2 0 W'],
+		['0 0 E', 'O 0 0 E'],
+		['2 0 W', 'O 2 0 W'],
 	])(
-		'is not able to move forward when it finds an obstacle in the latitude (%p)',
+		'prints its last location indicating that it has collided with an obstacle (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(1, 0)];
 			const roverController = createRoverController(initialLocation, obstacles);
@@ -180,10 +180,10 @@ describe('The Mars Rover', () => {
 	);
 
 	it.each([
-		['0 2 N', '0 2 N'],
-		['0 0 S', '0 0 S'],
+		['0 2 N', 'O 0 2 N'],
+		['0 0 S', 'O 0 0 S'],
 	])(
-		'is not able to move backward when it finds an obstacle in the longitude (%p)',
+		'prints its last location indicating that it has collided with an obstacle (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(0, 1)];
 			const roverController = createRoverController(initialLocation, obstacles);
@@ -195,10 +195,10 @@ describe('The Mars Rover', () => {
 	);
 
 	it.each([
-		['2 0 E', '2 0 E'],
-		['0 0 W', '0 0 W'],
+		['2 0 E', 'O 2 0 E'],
+		['0 0 W', 'O 0 0 W'],
 	])(
-		'is not able to move backward when it finds an obstacle in the latitude (%p)',
+		'prints its last location indicating that it has collided with an obstacle (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(1, 0)];
 			const roverController = createRoverController(initialLocation, obstacles);
@@ -209,13 +209,13 @@ describe('The Mars Rover', () => {
 		}
 	);
 
-	it('avoids several obstacles after colliding with them with the proper command sequence', () => {
+	it('stops executing commands after colliding obstacle', () => {
 		const initialLocation = '0 0 N';
-		const expectedLocation = '1 1 N';
-		const obstacles = [Coordinates.create(0, 1), Coordinates.create(2, 0)];
+		const expectedLocation = 'O 0 1 N';
+		const obstacles = [Coordinates.create(0, 2)];
 		const roverController = createRoverController(initialLocation, obstacles);
 
-		const result = roverController.process('FRFFLF');
+		const result = roverController.process('FFRFFLF');
 
 		expect(result).toBe(expectedLocation);
 	});

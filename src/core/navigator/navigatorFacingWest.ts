@@ -3,6 +3,7 @@ import { Planet } from '../planet';
 import { CardinalPoint, Navigator } from './navigator';
 import { NavigatorFacingNorth } from './navigatorFacingNorth';
 import { NavigatorFacingSouth } from './navigatorFacingSouth';
+import { NavigatorCollidingObstacle } from './navigatorCollidingObstacle';
 
 export class NavigatorFacingWest implements Navigator {
 	constructor(readonly coordinates: Coordinates, private readonly planet: Planet) {}
@@ -14,7 +15,7 @@ export class NavigatorFacingWest implements Navigator {
 	moveForward() {
 		const coordinates = this.calculateForwardCoordinates();
 		if (this.planet.hasObstacleAt(coordinates)) {
-			return this;
+			return new NavigatorCollidingObstacle(this.coordinates, this.planet, this.compass());
 		}
 		return new NavigatorFacingWest(coordinates, this.planet);
 	}
@@ -29,7 +30,7 @@ export class NavigatorFacingWest implements Navigator {
 	moveBackward() {
 		const coordinates = this.calculateBackwardCoordinates();
 		if (this.planet.hasObstacleAt(coordinates)) {
-			return this;
+			return new NavigatorCollidingObstacle(this.coordinates, this.planet, this.compass());
 		}
 		return new NavigatorFacingWest(coordinates, this.planet);
 	}
