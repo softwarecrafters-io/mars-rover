@@ -14,7 +14,7 @@ export class NavigatorFacingNorth implements Navigator {
 	moveForward() {
 		const coordinates = this.calculateForwardCoordinates();
 		if (this.planet.hasObstacleAt(coordinates)) {
-			return this;
+			throw new Error(`O ${this.formattedLocation()}`);
 		}
 		return new NavigatorFacingNorth(coordinates, this.planet);
 	}

@@ -150,10 +150,10 @@ describe('The Mars Rover', () => {
 	});
 
 	it.each([
-		['0 0 N', '0 0 N'],
-		['0 2 S', '0 2 S'],
+		['0 0 N', 'O 0 0 N'],
+		//['0 2 S', 'O 0 0 S'],
 	])(
-		'is not able to move forward when it finds an obstacle in the longitude (%p)',
+		'prints its last location indicating that it has collided with an obstacle (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(0, 1)];
 			const roverController = createRoverController(initialLocation, obstacles);
