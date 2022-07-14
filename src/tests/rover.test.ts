@@ -1,4 +1,3 @@
-import { RoverController } from '../core/roverController';
 import { Rover } from '../core/rover';
 import { Coordinates } from '../core/coordinates';
 import { Planet } from '../core/planet';
@@ -9,9 +8,9 @@ describe('The Mars Rover', () => {
 		['0 0 N', '0 0 N'],
 		['1 1 W', '1 1 W'],
 	])('stays in initial location (%p) for a given empty command', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('');
+		const result = rover.run('');
 
 		expect(result).toBe(expectedLocation);
 	});
@@ -22,11 +21,9 @@ describe('The Mars Rover', () => {
 		['0 0 E', '1 0 E'],
 		['1 0 W', '0 0 W'],
 	])('moves forward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('F');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('F')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -35,11 +32,9 @@ describe('The Mars Rover', () => {
 		['1 0 E', '0 0 E'],
 		['0 0 W', '1 0 W'],
 	])('moves backward one step in the axis for a given forward command (%p)', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('B');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('B')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -48,11 +43,9 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 0 W'],
 		['0 0 W', '0 0 N'],
 	])('rotates 90 degrees to the right for a given right rotation command (%p)', (initialLocation, expectedLocation) => {
-		const rover = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = rover.process('R');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('R')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -61,11 +54,9 @@ describe('The Mars Rover', () => {
 		['0 0 S', '0 0 E'],
 		['0 0 E', '0 0 N'],
 	])('rotates 90 degrees to the left for a given left rotation command (%p)', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('L');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('L')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -76,11 +67,9 @@ describe('The Mars Rover', () => {
 	])(
 		'moves forward multiple step in the axis for a given forward command (%p)',
 		(initialLocation, expectedLocation) => {
-			const roverController = createRoverController(initialLocation);
+			const rover = createRover(initialLocation);
 
-			const result = roverController.process('FFF');
-
-			expect(result).toBe(expectedLocation);
+			expect(rover.run('FFF')).toBe(expectedLocation);
 		}
 	);
 
@@ -92,22 +81,18 @@ describe('The Mars Rover', () => {
 	])(
 		'moves backward multiple step in the axis for a given forward command (%p)',
 		(initialLocation, expectedLocation) => {
-			const roverController = createRoverController(initialLocation);
+			const rover = createRover(initialLocation);
 
-			const result = roverController.process('BBB');
-
-			expect(result).toBe(expectedLocation);
+			expect(rover.run('BBB')).toBe(expectedLocation);
 		}
 	);
 
 	it('moves and rotates multiple times for a given command sequence', () => {
 		const initialLocation = '0 0 N';
 		const expectedLocation = '2 2 S';
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('FFRFFFBRRL');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('FFRFFFBRRL')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -116,11 +101,9 @@ describe('The Mars Rover', () => {
 		['10 0 E', '0 0 E'],
 		['0 0 W', '10 0 W'],
 	])('moves forward one step in the boundary coordinates of the planet (%p)', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('F');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('F')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -129,11 +112,9 @@ describe('The Mars Rover', () => {
 		['0 0 E', '10 0 E'],
 		['10 0 W', '0 0 W'],
 	])('moves backward one step in the boundary coordinates of the planet (%p)', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('B');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('B')).toBe(expectedLocation);
 	});
 
 	it.each([
@@ -142,25 +123,21 @@ describe('The Mars Rover', () => {
 		['0 0 E', '10 0 E'],
 		['10 0 W', '0 0 W'],
 	])('moves backward one step in the boundary coordinates of the planet (%p)', (initialLocation, expectedLocation) => {
-		const roverController = createRoverController(initialLocation);
+		const rover = createRover(initialLocation);
 
-		const result = roverController.process('B');
-
-		expect(result).toBe(expectedLocation);
+		expect(rover.run('B')).toBe(expectedLocation);
 	});
 
 	it.each([
 		['0 0 N', 'O 0 0 N'],
 		['0 2 S', 'O 0 2 S'],
 	])(
-		'prints its last location indicating that it has collided with an obstacle (%p)',
+		'prints its last location indicating that it has collided with an obstacle when is going forward in y-axis (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(0, 1)];
-			const roverController = createRoverController(initialLocation, obstacles);
+			const rover = createRover(initialLocation, obstacles);
 
-			const result = roverController.process('F');
-
-			expect(result).toBe(expectedLocation);
+			expect(rover.run('F')).toBe(expectedLocation);
 		}
 	);
 
@@ -168,14 +145,12 @@ describe('The Mars Rover', () => {
 		['0 0 E', 'O 0 0 E'],
 		['2 0 W', 'O 2 0 W'],
 	])(
-		'prints its last location indicating that it has collided with an obstacle (%p)',
+		'prints its last location indicating that it has collided with an obstacle when is going forward in x-axis (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(1, 0)];
-			const roverController = createRoverController(initialLocation, obstacles);
+			const rover = createRover(initialLocation, obstacles);
 
-			const result = roverController.process('F');
-
-			expect(result).toBe(expectedLocation);
+			expect(rover.run('F')).toBe(expectedLocation);
 		}
 	);
 
@@ -183,14 +158,12 @@ describe('The Mars Rover', () => {
 		['0 2 N', 'O 0 2 N'],
 		['0 0 S', 'O 0 0 S'],
 	])(
-		'prints its last location indicating that it has collided with an obstacle (%p)',
+		'prints its last location indicating that it has collided with an obstacle when is going backward in y-axis (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(0, 1)];
-			const roverController = createRoverController(initialLocation, obstacles);
+			const rover = createRover(initialLocation, obstacles);
 
-			const result = roverController.process('B');
-
-			expect(result).toBe(expectedLocation);
+			expect(rover.run('B')).toBe(expectedLocation);
 		}
 	);
 
@@ -198,14 +171,12 @@ describe('The Mars Rover', () => {
 		['2 0 E', 'O 2 0 E'],
 		['0 0 W', 'O 0 0 W'],
 	])(
-		'prints its last location indicating that it has collided with an obstacle (%p)',
+		'prints its last location indicating that it has collided with an obstacle when is going forward in x-axis (%p)',
 		(initialLocation, expectedLocation) => {
 			const obstacles = [Coordinates.create(1, 0)];
-			const roverController = createRoverController(initialLocation, obstacles);
+			const rover = createRover(initialLocation, obstacles);
 
-			const result = roverController.process('B');
-
-			expect(result).toBe(expectedLocation);
+			expect(rover.run('B')).toBe(expectedLocation);
 		}
 	);
 
@@ -213,17 +184,13 @@ describe('The Mars Rover', () => {
 		const initialLocation = '0 0 N';
 		const expectedLocation = 'O 0 1 N';
 		const obstacles = [Coordinates.create(0, 2)];
-		const roverController = createRoverController(initialLocation, obstacles);
-
-		const result = roverController.process('FFRFFLF');
-
-		expect(result).toBe(expectedLocation);
+		const rover = createRover(initialLocation, obstacles);
+		expect(rover.run('FFRFFLF')).toBe(expectedLocation);
 	});
 });
 
-function createRoverController(initialLocation: string, obstacles: ReadonlyArray<Coordinates> = []) {
+function createRover(initialLocation: string, obstacles: ReadonlyArray<Coordinates> = []) {
 	const planet = new Planet(Coordinates.create(10, 10), obstacles);
 	const navigator = NavigatorFactory.createFrom(initialLocation, planet);
-	const rover = new Rover(navigator);
-	return new RoverController(rover);
+	return new Rover(navigator);
 }

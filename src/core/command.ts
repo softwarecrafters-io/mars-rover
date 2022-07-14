@@ -1,3 +1,10 @@
+export enum CommandKind {
+	'Forward' = 'F',
+	'Backward' = 'B',
+	'Left' = 'L',
+	'Right' = 'R',
+}
+
 export class Command {
 	constructor(private readonly value: 'F' | 'B' | 'L' | 'R') {}
 
@@ -9,7 +16,7 @@ export class Command {
 		return new Command(rawCommand);
 	}
 
-	static translate(rawCommands: string) {
+	static parse(rawCommands: string) {
 		return rawCommands.split('').map((c) => Command.create(c));
 	}
 

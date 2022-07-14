@@ -2,21 +2,31 @@ import { Command } from './command';
 import { Navigator } from './navigator/navigator';
 
 export class Rover {
-	constructor(private readonly navigator: Navigator) {}
+	constructor(private navigator: Navigator) {}
 
-	execute(command: Command) {
+	run(rawCommands: string) {
+		const commands = Command.parse(rawCommands);
+		this.executeCommands(commands);
+		return this.formattedLocation();
+	}
+
+	private executeCommands = (commands: ReadonlyArray<Command>): void => {
+		commands.forEach((command: Command) => {
+			this.navigator = this.executeNavigator(command);
+		});
+	};
+
+	private executeNavigator(command: Command) {
 		if (command.isForward()) {
-			return new Rover(this.navigator.moveForward());
+			return this.navigator.moveForward();
 		}
 		if (command.isBackward()) {
-			return new Rover(this.navigator.moveBackward());
+			return this.navigator.moveBackward();
 		}
 		if (command.isRotateLeft()) {
-			return new Rover(this.navigator.rotateLeft());
+			return this.navigator.rotateLeft();
 		}
-		if (command.isRotateRight()) {
-			return new Rover(this.navigator.rotateRight());
-		}
+		return this.navigator.rotateRight();
 	}
 
 	formattedLocation() {
